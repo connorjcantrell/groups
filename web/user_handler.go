@@ -5,14 +5,15 @@ import (
 	"net/http"
 
 	"github.com/alexedwards/scs/v2"
-	"github.com/connorjcantrell/groups"
+	groups "github.com/connorjcantrell/groups"
+	"github.com/connorjcantrell/groups/web/form"
 	"github.com/google/uuid"
 	"github.com/gorilla/csrf"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type UserHandler struct {
-	store    groups.Store
+	store    groups.User
 	sessions *scs.SessionManager
 }
 
@@ -33,15 +34,15 @@ func (h *UserHandler) Register() http.HandlerFunc {
 
 func (h *UserHandler) RegisterSubmit() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		form := RegisterForm{
-			Email:      r.FormValue("username"),
-			Password:   r.FormValue("password"),
-			EmailTaken: false,
+		form := form.RegisterForm{
+			Email:    r.FormValue("username"),
+			Password: r.FormValue("password"),
 		}
-		if _, err := h.store.UserByEmail(form.Email); err == nil {
-			form.EmailTaken = true
-		}
-		if !form.Validate() {
+		// if _, err := h.store.UserByEmail(form.Email); err == nil {
+		// 	form.EmailTaken = true
+		// }
+		b, err := form.Validate()
+		if !b {
 			h.sessions.Put(r.Context(), "form", form)
 			http.Redirect(w, r, r.Referer(), http.StatusFound)
 			return
@@ -102,9 +103,6 @@ func (h *UserHandler) LoginSubmit() http.HandlerFunc {
 			return
 		}
 
-		// TODO: Security Vulerability?
-		// Is this a security vulerability to expose the user_id in the Request
-		// Context? Perhaps we could provide a hash of the user_id instead?
 		h.sessions.Put(r.Context(), "user_id", user.ID)
 		h.sessions.Put(r.Context(), "flash", "You have been logged in sucessfully.")
 		http.Redirect(w, r, "/", http.StatusFound)
