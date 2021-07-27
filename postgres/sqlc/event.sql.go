@@ -14,11 +14,12 @@ INSERT INTO events (
   group_id,
   book_id,
   chapter_id,
+  video_link,
   start_time,
   duration,
   description
 ) VALUES (
-  $1, $2, $3, $4, $5, $6
+  $1, $2, $3, $4, $5, $6, $7
 ) RETURNING id, group_id, book_id, chapter_id, video_link, start_time, duration, description, canceled, created_at
 `
 
@@ -26,6 +27,7 @@ type CreateEventParams struct {
 	GroupID     sql.NullInt32   `json:"group_id"`
 	BookID      sql.NullInt32   `json:"book_id"`
 	ChapterID   sql.NullInt32   `json:"chapter_id"`
+	VideoLink   string          `json:"video_link"`
 	StartTime   time.Time       `json:"start_time"`
 	Duration    sql.NullFloat64 `json:"duration"`
 	Description sql.NullString  `json:"description"`
@@ -36,6 +38,7 @@ func (q *Queries) CreateEvent(ctx context.Context, arg CreateEventParams) (Event
 		arg.GroupID,
 		arg.BookID,
 		arg.ChapterID,
+		arg.VideoLink,
 		arg.StartTime,
 		arg.Duration,
 		arg.Description,
@@ -133,9 +136,10 @@ SET
   group_id = $2,
   book_id = $3,
   chapter_id = $4,
-  start_time = $5,
-  duration = $6,
-  description = $7
+  video_link = $5,
+  start_time = $6,
+  duration = $7,
+  description = $8
 WHERE id = $1
 RETURNING id, group_id, book_id, chapter_id, video_link, start_time, duration, description, canceled, created_at
 `
@@ -145,6 +149,7 @@ type UpdateEventParams struct {
 	GroupID     sql.NullInt32   `json:"group_id"`
 	BookID      sql.NullInt32   `json:"book_id"`
 	ChapterID   sql.NullInt32   `json:"chapter_id"`
+	VideoLink   string          `json:"video_link"`
 	StartTime   time.Time       `json:"start_time"`
 	Duration    sql.NullFloat64 `json:"duration"`
 	Description sql.NullString  `json:"description"`
@@ -156,6 +161,7 @@ func (q *Queries) UpdateEvent(ctx context.Context, arg UpdateEventParams) (Event
 		arg.GroupID,
 		arg.BookID,
 		arg.ChapterID,
+		arg.VideoLink,
 		arg.StartTime,
 		arg.Duration,
 		arg.Description,
