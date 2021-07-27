@@ -10,11 +10,12 @@ INSERT INTO events (
   group_id,
   book_id,
   chapter_id,
+  video_link,
   start_time,
   duration,
   description
 ) VALUES (
-  $1, $2, $3, $4, $5, $6
+  $1, $2, $3, $4, $5, $6, $7
 ) RETURNING *;
 
 -- name: UpdateEvent :one
@@ -23,9 +24,10 @@ SET
   group_id = $2,
   book_id = $3,
   chapter_id = $4,
-  start_time = $5,
-  duration = $6,
-  description = $7
+  video_link = $5,
+  start_time = $6,
+  duration = $7,
+  description = $8
 WHERE id = $1
 RETURNING *;
 
