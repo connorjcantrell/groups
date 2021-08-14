@@ -54,6 +54,7 @@ type Group struct {
 	Name        string         `json:"name"`
 	Description sql.NullString `json:"description"`
 	CreatedAt   sql.NullTime   `json:"created_at"`
+	// Books []Book `json:"books"`
 }
 
 type GroupBook struct {

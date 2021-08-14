@@ -6,28 +6,29 @@ import (
 
 	"github.com/alexedwards/scs/v2"
 	groups "github.com/connorjcantrell/groups"
+	"github.com/connorjcantrell/groups/models"
 	"github.com/connorjcantrell/groups/web/form"
-	"github.com/google/uuid"
+	"github.com/connorjcantrell/groups/postgres"
+	"&
+	github.com/google/uuid"
 	"github.com/gorilla/csrf"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type UserHandler struct {
-	store    groups.User
+	store    models.User
 	sessions *scs.SessionManager
 }
 
 func (h *UserHandler) Register() http.HandlerFunc {
 	type data struct {
 		SessionData
-		CSRF template.HTML
 	}
 
 	tmpl := template.Must(template.ParseFiles("templates/layout.html", "templates/user_register.html"))
 	return func(w http.ResponseWriter, r *http.Request) {
 		tmpl.Execute(w, data{
 			SessionData: GetSessionData(h.sessions, r.Context()),
-			CSRF:        csrf.TemplateField(r),
 		})
 	}
 }
@@ -38,9 +39,9 @@ func (h *UserHandler) RegisterSubmit() http.HandlerFunc {
 			Email:    r.FormValue("username"),
 			Password: r.FormValue("password"),
 		}
-		// if _, err := h.store.UserByEmail(form.Email); err == nil {
-		// 	form.EmailTaken = true
-		// }
+		if _, err := postgres..UserByEmail(form.Email); err == nil {
+			form.EmailTaken = true
+		}
 		b, err := form.Validate()
 		if !b {
 			h.sessions.Put(r.Context(), "form", form)
@@ -68,21 +69,6 @@ func (h *UserHandler) RegisterSubmit() http.HandlerFunc {
 	}
 }
 
-func (h *UserHandler) Login() http.HandlerFunc {
-	type data struct {
-		SessionData
-		CSRF template.HTML
-	}
-
-	tmpl := template.Must(template.ParseFiles("templates/layout.html", "templates/user_login.html"))
-	return func(w http.ResponseWriter, r *http.Request) {
-		tmpl.Execute(w, data{
-			SessionData: GetSessionData(h.sessions, r.Context()),
-			CSRF:        csrf.TemplateField(r),
-		})
-	}
-}
-
 func (h *UserHandler) LoginSubmit() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		form := LoginForm{
@@ -90,7 +76,7 @@ func (h *UserHandler) LoginSubmit() http.HandlerFunc {
 			Password:             r.FormValue("password"),
 			IncorrectCredentials: false,
 		}
-		user, err := h.store.UserByEmail(form.Email)
+		user, err := h.UserByEmail(form.Email)
 		if err != nil {
 			form.IncorrectCredentials = true
 		} else {

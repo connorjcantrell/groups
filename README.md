@@ -1,6 +1,6 @@
 # Groups
 
-Groups is a web application that brings passionate self learners together by using a peer to peer online reading group format inspired by Casey Bowman's [Los Gatos Reading Group](https://www.meetup.com/Los-Gatos-Rust-Reading-Group/)
+Groups is a web application that helps people collaboratively learn technical skills by using an online reading group format inspired by Casey Bowman's [Los Gatos Reading Group](https://www.meetup.com/Los-Gatos-Rust-Reading-Group/)
 
 # Installation
 TBD

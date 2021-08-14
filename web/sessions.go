@@ -7,7 +7,7 @@ import (
 
 	"github.com/alexedwards/scs/postgresstore"
 	"github.com/alexedwards/scs/v2"
-	"github.com/connorjcantrell/groups"
+	"github.com/connorjcantrell/groups/models"
 	"github.com/google/uuid"
 )
 
@@ -30,7 +30,7 @@ func NewSessionManager(dataSourceName string) (*scs.SessionManager, error) {
 type SessionData struct {
 	FlashMessage string
 	Form         interface{}
-	User         groups.User
+	User         models.User
 	LoggedIn     bool
 }
 
@@ -38,7 +38,7 @@ func GetSessionData(session *scs.SessionManager, ctx context.Context) SessionDat
 	var data SessionData
 
 	data.FlashMessage = session.PopString(ctx, "flash")
-	data.User, data.LoggedIn = ctx.Value("user").(groups.User)
+	data.User, data.LoggedIn = ctx.Value("user").(models.User)
 
 	data.Form = session.Pop(ctx, "form")
 	if data.Form == nil {

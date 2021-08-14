@@ -12,19 +12,21 @@ import (
 	"github.com/gorilla/csrf"
 )
 
-func NewHandler(store groups.Store, sessions *scs.SessionManager, csrfKey []byte) *Handler {
+func NewHandler(sessions *scs.SessionManager, csrfKey []byte) *Handler {
 	h := &Handler{
 		Mux:      chi.NewMux(),
 		store:    store,
 		sessions: sessions,
 	}
 
-	user := UserHandler{store: store, sessions: sessions}
-	group := GroupHandler{store: store, sessions: sessions}
-	event := EventHandler{store: store, sessions: sessions}
-	book := BookHandler{store: store, sessions: sessions}
-	chapter := ChapterHandler{store: store, sessions: sessions}
-	section := SectionHandler{store: store, sessions: sessions}
+	// handler only needs user, not a big session. Maybe handlers can use use user directly
+	user := sessions.GetUser()
+	userHandler := UserHandler{user: user}
+	groupHandler := GroupHandler{sessions: sessions}
+	eventHandler := EventHandler{sessions: sessions}
+	bookHandler := BookHandler{sessions: sessions}
+	chapterHandler := ChapterHandler{sessions: sessions}
+	sectionHandler := SectionHandler{sessions: sessions}
 
 	h.Use(middleware.Logger)                         // log request body
 	h.Use(csrf.Protect(csrfKey, csrf.Secure(false))) // CSRF is cross-site ... to protect user from fake websties
@@ -32,26 +34,49 @@ func NewHandler(store groups.Store, sessions *scs.SessionManager, csrfKey []byte
 	h.Use(h.withUser)
 
 	// RESTful APIs
-	h.Post("/register", user.RegisterSubmit())
+	h.Post("/register", userHandler.RegisterSubmit())
 
-	h.Post("/login", user.LoginSubmit())
+	h.Post("/login", userHandler.LoginSubmit())
 
-	h.Post("/groups", group.Store())
-	h.Get("/groups/{id}", group.Group())
+	h.Get("/groups", groupHandler.List())
+	h.Get("/groups/{id}", groupHandler.Group())
+	h.Post("/groups/new", groupHandler.Store())
+	h.Post("/groups/{id}/update", groupHandler.Update())
+	h.Post("groups/{id}/delete", groupHandler.Delete())
 
-	h.Get("/groups/{id}/events") // 1-n relationship between group and events
-	// group.GetEvents(),
-	// event.GetByGroup(),
-	// 2 functions are the same
+	// TODO: Implement 1-n relationship between group and events
+	h.Get("/groups/{id}/events", groupHandler.GetEvents())
+
+	h.Get("/events/{id}", eventHandler.Event())
+	h.Post("/events/new", eventHandler.Store())
+	h.Get("/events/user/{id}", eventHandler.EventsByUser())
 
 	// CRU_ event -> 3 APIs -> miss 0
 	// h.Get("/events/new", event.Create()) // HTML website
-	h.Post("/events", event.Store()) // POST event -> use RESTful API convention
+
+	// to check book is exist, use foreign key;
+	// book_id 1 -> join table -> the DB will check whether the key is correct -> the book.id = 1 is exist
+	// TODO: Read link
+	// https://www.w3schools.com/sql/sql_foreignkey.asp
+
+	// only do validations if you have all data for that in the application layer, if you need to query db, do not do it
+
+	// 3 APIs:
+	// - get groups: /groups
+	// - get all books in a group: /groups/{id}/books
+	// - get chapters in a book: /books/{id}/chapters (my preferred way) or /groups/{group_id}/books/{book_id}/chapters
+	// -> get all chapters of a book in a group
+	// - get all sections of a chapter: /chapters/{id}/sections?event={event_id}
+	// 2 cases: -> how RESTful API works -> stick to the best practices and conventions
+	// - if event query is exist: only get sections covered by the event
+	// - if event is not exist: get all sections
+
+	h.Post("/events", eventHandler.Store()) // POST event -> use RESTful API convention
 	// -> {
 	//	"event": {"id": 1, "name": "my event"}
 	// }
-	h.Get("/events/{id}", event.Event())
-	h.Delete("/events/{id}", event.Delete())
+	h.Get("/events/{id}", eventHandler.Event())
+	h.Delete("/events/{id}", eventHandler.Delete())
 
 	h.Post("/books", book.Store())
 

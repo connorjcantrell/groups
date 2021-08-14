@@ -24,7 +24,7 @@ type CreateBookParams struct {
 }
 
 func (q *Queries) CreateBook(ctx context.Context, arg CreateBookParams) (Book, error) {
-	row := q.db.QueryRowContext(ctx, createBook, arg.Title, arg.Author, arg.Category)
+	row := q.queryRow(ctx, q.createBookStmt, createBook, arg.Title, arg.Author, arg.Category)
 	var i Book
 	err := row.Scan(
 		&i.ID,
@@ -41,7 +41,7 @@ WHERE id = $1
 `
 
 func (q *Queries) DeleteBook(ctx context.Context, id int32) error {
-	_, err := q.db.ExecContext(ctx, deleteBook, id)
+	_, err := q.exec(ctx, q.deleteBookStmt, deleteBook, id)
 	return err
 }
 
@@ -51,7 +51,7 @@ WHERE id = $1 LIMIT 1
 `
 
 func (q *Queries) GetBook(ctx context.Context, id int32) (Book, error) {
-	row := q.db.QueryRowContext(ctx, getBook, id)
+	row := q.queryRow(ctx, q.getBookStmt, getBook, id)
 	var i Book
 	err := row.Scan(
 		&i.ID,
@@ -67,7 +67,7 @@ SELECT id, title, author, category FROM books
 `
 
 func (q *Queries) GetBooks(ctx context.Context) ([]Book, error) {
-	rows, err := q.db.QueryContext(ctx, getBooks)
+	rows, err := q.query(ctx, q.getBooksStmt, getBooks)
 	if err != nil {
 		return nil, err
 	}
@@ -100,7 +100,7 @@ WHERE category = $1
 `
 
 func (q *Queries) GetBooksByCategory(ctx context.Context, category string) ([]Book, error) {
-	rows, err := q.db.QueryContext(ctx, getBooksByCategory, category)
+	rows, err := q.query(ctx, q.getBooksByCategoryStmt, getBooksByCategory, category)
 	if err != nil {
 		return nil, err
 	}
@@ -145,7 +145,7 @@ type UpdateBookParams struct {
 }
 
 func (q *Queries) UpdateBook(ctx context.Context, arg UpdateBookParams) (Book, error) {
-	row := q.db.QueryRowContext(ctx, updateBook,
+	row := q.queryRow(ctx, q.updateBookStmt, updateBook,
 		arg.ID,
 		arg.Title,
 		arg.Author,

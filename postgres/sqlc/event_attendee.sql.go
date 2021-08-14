@@ -23,7 +23,7 @@ type CreateEventAttendeeParams struct {
 }
 
 func (q *Queries) CreateEventAttendee(ctx context.Context, arg CreateEventAttendeeParams) (EventAttendee, error) {
-	row := q.db.QueryRowContext(ctx, createEventAttendee, arg.EventID, arg.UserID)
+	row := q.queryRow(ctx, q.createEventAttendeeStmt, createEventAttendee, arg.EventID, arg.UserID)
 	var i EventAttendee
 	err := row.Scan(&i.ID, &i.EventID, &i.UserID)
 	return i, err
@@ -35,7 +35,7 @@ WHERE id = $1
 `
 
 func (q *Queries) DeleteEventAttendee(ctx context.Context, id int32) error {
-	_, err := q.db.ExecContext(ctx, deleteEventAttendee, id)
+	_, err := q.exec(ctx, q.deleteEventAttendeeStmt, deleteEventAttendee, id)
 	return err
 }
 
@@ -45,7 +45,7 @@ WHERE id = $1 LIMIT 1
 `
 
 func (q *Queries) GetEventAttendee(ctx context.Context, id int32) (EventAttendee, error) {
-	row := q.db.QueryRowContext(ctx, getEventAttendee, id)
+	row := q.queryRow(ctx, q.getEventAttendeeStmt, getEventAttendee, id)
 	var i EventAttendee
 	err := row.Scan(&i.ID, &i.EventID, &i.UserID)
 	return i, err
@@ -57,7 +57,7 @@ WHERE event_id = $1
 `
 
 func (q *Queries) GetEventAttendeesByEvent(ctx context.Context, eventID sql.NullInt32) ([]EventAttendee, error) {
-	rows, err := q.db.QueryContext(ctx, getEventAttendeesByEvent, eventID)
+	rows, err := q.query(ctx, q.getEventAttendeesByEventStmt, getEventAttendeesByEvent, eventID)
 	if err != nil {
 		return nil, err
 	}
@@ -85,7 +85,7 @@ WHERE user_id = $1
 `
 
 func (q *Queries) GetEventAttendeesByUser(ctx context.Context, userID sql.NullInt32) ([]EventAttendee, error) {
-	rows, err := q.db.QueryContext(ctx, getEventAttendeesByUser, userID)
+	rows, err := q.query(ctx, q.getEventAttendeesByUserStmt, getEventAttendeesByUser, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -123,7 +123,7 @@ type UpdateEventAttendeeParams struct {
 }
 
 func (q *Queries) UpdateEventAttendee(ctx context.Context, arg UpdateEventAttendeeParams) (EventAttendee, error) {
-	row := q.db.QueryRowContext(ctx, updateEventAttendee, arg.ID, arg.EventID, arg.UserID)
+	row := q.queryRow(ctx, q.updateEventAttendeeStmt, updateEventAttendee, arg.ID, arg.EventID, arg.UserID)
 	var i EventAttendee
 	err := row.Scan(&i.ID, &i.EventID, &i.UserID)
 	return i, err

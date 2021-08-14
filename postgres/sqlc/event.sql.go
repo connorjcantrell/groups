@@ -34,7 +34,7 @@ type CreateEventParams struct {
 }
 
 func (q *Queries) CreateEvent(ctx context.Context, arg CreateEventParams) (Event, error) {
-	row := q.db.QueryRowContext(ctx, createEvent,
+	row := q.queryRow(ctx, q.createEventStmt, createEvent,
 		arg.GroupID,
 		arg.BookID,
 		arg.ChapterID,
@@ -65,7 +65,7 @@ WHERE id = $1
 `
 
 func (q *Queries) DeleteEvent(ctx context.Context, id int32) error {
-	_, err := q.db.ExecContext(ctx, deleteEvent, id)
+	_, err := q.exec(ctx, q.deleteEventStmt, deleteEvent, id)
 	return err
 }
 
@@ -75,7 +75,7 @@ WHERE id = $1 LIMIT 1
 `
 
 func (q *Queries) GetEvent(ctx context.Context, id int32) (Event, error) {
-	row := q.db.QueryRowContext(ctx, getEvent, id)
+	row := q.queryRow(ctx, q.getEventStmt, getEvent, id)
 	var i Event
 	err := row.Scan(
 		&i.ID,
@@ -97,7 +97,7 @@ SELECT id, group_id, book_id, chapter_id, video_link, start_time, duration, desc
 `
 
 func (q *Queries) GetEvents(ctx context.Context) ([]Event, error) {
-	rows, err := q.db.QueryContext(ctx, getEvents)
+	rows, err := q.query(ctx, q.getEventsStmt, getEvents)
 	if err != nil {
 		return nil, err
 	}
@@ -156,7 +156,7 @@ type UpdateEventParams struct {
 }
 
 func (q *Queries) UpdateEvent(ctx context.Context, arg UpdateEventParams) (Event, error) {
-	row := q.db.QueryRowContext(ctx, updateEvent,
+	row := q.queryRow(ctx, q.updateEventStmt, updateEvent,
 		arg.ID,
 		arg.GroupID,
 		arg.BookID,

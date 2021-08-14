@@ -25,7 +25,7 @@ type CreateSectionParams struct {
 }
 
 func (q *Queries) CreateSection(ctx context.Context, arg CreateSectionParams) (Section, error) {
-	row := q.db.QueryRowContext(ctx, createSection, arg.ChapterID, arg.Title, arg.Number)
+	row := q.queryRow(ctx, q.createSectionStmt, createSection, arg.ChapterID, arg.Title, arg.Number)
 	var i Section
 	err := row.Scan(
 		&i.ID,
@@ -42,7 +42,7 @@ WHERE id = $1
 `
 
 func (q *Queries) DeleteSection(ctx context.Context, id int32) error {
-	_, err := q.db.ExecContext(ctx, deleteSection, id)
+	_, err := q.exec(ctx, q.deleteSectionStmt, deleteSection, id)
 	return err
 }
 
@@ -52,7 +52,7 @@ WHERE id = $1 LIMIT 1
 `
 
 func (q *Queries) GetSection(ctx context.Context, id int32) (Section, error) {
-	row := q.db.QueryRowContext(ctx, getSection, id)
+	row := q.queryRow(ctx, q.getSectionStmt, getSection, id)
 	var i Section
 	err := row.Scan(
 		&i.ID,
@@ -69,7 +69,7 @@ WHERE chapter_id = $1
 `
 
 func (q *Queries) GetSectionsByChapter(ctx context.Context, chapterID sql.NullInt32) ([]Section, error) {
-	rows, err := q.db.QueryContext(ctx, getSectionsByChapter, chapterID)
+	rows, err := q.query(ctx, q.getSectionsByChapterStmt, getSectionsByChapter, chapterID)
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +114,7 @@ type UpdateSectionParams struct {
 }
 
 func (q *Queries) UpdateSection(ctx context.Context, arg UpdateSectionParams) (Section, error) {
-	row := q.db.QueryRowContext(ctx, updateSection,
+	row := q.queryRow(ctx, q.updateSectionStmt, updateSection,
 		arg.ID,
 		arg.ChapterID,
 		arg.Title,

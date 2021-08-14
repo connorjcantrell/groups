@@ -25,7 +25,7 @@ type CreateGroupParams struct {
 }
 
 func (q *Queries) CreateGroup(ctx context.Context, arg CreateGroupParams) (Group, error) {
-	row := q.db.QueryRowContext(ctx, createGroup, arg.Organizer, arg.Name, arg.Description)
+	row := q.queryRow(ctx, q.createGroupStmt, createGroup, arg.Organizer, arg.Name, arg.Description)
 	var i Group
 	err := row.Scan(
 		&i.ID,
@@ -43,7 +43,7 @@ WHERE id = $1
 `
 
 func (q *Queries) DeleteGroup(ctx context.Context, id int32) error {
-	_, err := q.db.ExecContext(ctx, deleteGroup, id)
+	_, err := q.exec(ctx, q.deleteGroupStmt, deleteGroup, id)
 	return err
 }
 
@@ -53,7 +53,7 @@ WHERE id = $1 LIMIT 1
 `
 
 func (q *Queries) GetGroup(ctx context.Context, id int32) (Group, error) {
-	row := q.db.QueryRowContext(ctx, getGroup, id)
+	row := q.queryRow(ctx, q.getGroupStmt, getGroup, id)
 	var i Group
 	err := row.Scan(
 		&i.ID,
@@ -70,7 +70,7 @@ SELECT id, organizer, name, description, created_at FROM groups
 `
 
 func (q *Queries) GetGroups(ctx context.Context) ([]Group, error) {
-	rows, err := q.db.QueryContext(ctx, getGroups)
+	rows, err := q.query(ctx, q.getGroupsStmt, getGroups)
 	if err != nil {
 		return nil, err
 	}
@@ -116,7 +116,7 @@ type UpdateGroupParams struct {
 }
 
 func (q *Queries) UpdateGroup(ctx context.Context, arg UpdateGroupParams) (Group, error) {
-	row := q.db.QueryRowContext(ctx, updateGroup,
+	row := q.queryRow(ctx, q.updateGroupStmt, updateGroup,
 		arg.ID,
 		arg.Organizer,
 		arg.Name,

@@ -22,7 +22,7 @@ type CreateUserParams struct {
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, createUser, arg.Email, arg.Password)
+	row := q.queryRow(ctx, q.createUserStmt, createUser, arg.Email, arg.Password)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -39,7 +39,7 @@ WHERE id = $1
 `
 
 func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
-	_, err := q.db.ExecContext(ctx, deleteUser, id)
+	_, err := q.exec(ctx, q.deleteUserStmt, deleteUser, id)
 	return err
 }
 
@@ -49,7 +49,7 @@ WHERE id = $1 LIMIT 1
 `
 
 func (q *Queries) GetUser(ctx context.Context, id int32) (User, error) {
-	row := q.db.QueryRowContext(ctx, getUser, id)
+	row := q.queryRow(ctx, q.getUserStmt, getUser, id)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -66,7 +66,7 @@ WHERE email = $1 LIMIT 1
 `
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
-	row := q.db.QueryRowContext(ctx, getUserByEmail, email)
+	row := q.queryRow(ctx, q.getUserByEmailStmt, getUserByEmail, email)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -93,7 +93,7 @@ type UpdateUserParams struct {
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, updateUser, arg.ID, arg.Email, arg.Password)
+	row := q.queryRow(ctx, q.updateUserStmt, updateUser, arg.ID, arg.Email, arg.Password)
 	var i User
 	err := row.Scan(
 		&i.ID,

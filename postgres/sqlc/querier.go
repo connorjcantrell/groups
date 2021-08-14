@@ -8,6 +8,7 @@ import (
 )
 
 type Querier interface {
+	BookExistsInGroup(ctx context.Context, bookID sql.NullInt32) (int64, error)
 	CreateBook(ctx context.Context, arg CreateBookParams) (Book, error)
 	CreateChapter(ctx context.Context, arg CreateChapterParams) (Chapter, error)
 	CreateEvent(ctx context.Context, arg CreateEventParams) (Event, error)

@@ -5,6 +5,7 @@ package db
 import (
 	"context"
 	"database/sql"
+	"fmt"
 )
 
 type DBTX interface {
@@ -18,12 +19,558 @@ func New(db DBTX) *Queries {
 	return &Queries{db: db}
 }
 
+func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
+	q := Queries{db: db}
+	var err error
+	if q.bookExistsInGroupStmt, err = db.PrepareContext(ctx, bookExistsInGroup); err != nil {
+		return nil, fmt.Errorf("error preparing query BookExistsInGroup: %w", err)
+	}
+	if q.createBookStmt, err = db.PrepareContext(ctx, createBook); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateBook: %w", err)
+	}
+	if q.createChapterStmt, err = db.PrepareContext(ctx, createChapter); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateChapter: %w", err)
+	}
+	if q.createEventStmt, err = db.PrepareContext(ctx, createEvent); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateEvent: %w", err)
+	}
+	if q.createEventAttendeeStmt, err = db.PrepareContext(ctx, createEventAttendee); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateEventAttendee: %w", err)
+	}
+	if q.createEventSectionStmt, err = db.PrepareContext(ctx, createEventSection); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateEventSection: %w", err)
+	}
+	if q.createGroupStmt, err = db.PrepareContext(ctx, createGroup); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateGroup: %w", err)
+	}
+	if q.createGroupBookStmt, err = db.PrepareContext(ctx, createGroupBook); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateGroupBook: %w", err)
+	}
+	if q.createSectionStmt, err = db.PrepareContext(ctx, createSection); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateSection: %w", err)
+	}
+	if q.createUserStmt, err = db.PrepareContext(ctx, createUser); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateUser: %w", err)
+	}
+	if q.deleteBookStmt, err = db.PrepareContext(ctx, deleteBook); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteBook: %w", err)
+	}
+	if q.deleteChapterStmt, err = db.PrepareContext(ctx, deleteChapter); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteChapter: %w", err)
+	}
+	if q.deleteEventStmt, err = db.PrepareContext(ctx, deleteEvent); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteEvent: %w", err)
+	}
+	if q.deleteEventAttendeeStmt, err = db.PrepareContext(ctx, deleteEventAttendee); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteEventAttendee: %w", err)
+	}
+	if q.deleteEventSectionStmt, err = db.PrepareContext(ctx, deleteEventSection); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteEventSection: %w", err)
+	}
+	if q.deleteGroupStmt, err = db.PrepareContext(ctx, deleteGroup); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteGroup: %w", err)
+	}
+	if q.deleteGroupBookStmt, err = db.PrepareContext(ctx, deleteGroupBook); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteGroupBook: %w", err)
+	}
+	if q.deleteSectionStmt, err = db.PrepareContext(ctx, deleteSection); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteSection: %w", err)
+	}
+	if q.deleteUserStmt, err = db.PrepareContext(ctx, deleteUser); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteUser: %w", err)
+	}
+	if q.getBookStmt, err = db.PrepareContext(ctx, getBook); err != nil {
+		return nil, fmt.Errorf("error preparing query GetBook: %w", err)
+	}
+	if q.getBooksStmt, err = db.PrepareContext(ctx, getBooks); err != nil {
+		return nil, fmt.Errorf("error preparing query GetBooks: %w", err)
+	}
+	if q.getBooksByCategoryStmt, err = db.PrepareContext(ctx, getBooksByCategory); err != nil {
+		return nil, fmt.Errorf("error preparing query GetBooksByCategory: %w", err)
+	}
+	if q.getChapterStmt, err = db.PrepareContext(ctx, getChapter); err != nil {
+		return nil, fmt.Errorf("error preparing query GetChapter: %w", err)
+	}
+	if q.getChaptersStmt, err = db.PrepareContext(ctx, getChapters); err != nil {
+		return nil, fmt.Errorf("error preparing query GetChapters: %w", err)
+	}
+	if q.getChaptersByBookStmt, err = db.PrepareContext(ctx, getChaptersByBook); err != nil {
+		return nil, fmt.Errorf("error preparing query GetChaptersByBook: %w", err)
+	}
+	if q.getEventStmt, err = db.PrepareContext(ctx, getEvent); err != nil {
+		return nil, fmt.Errorf("error preparing query GetEvent: %w", err)
+	}
+	if q.getEventAttendeeStmt, err = db.PrepareContext(ctx, getEventAttendee); err != nil {
+		return nil, fmt.Errorf("error preparing query GetEventAttendee: %w", err)
+	}
+	if q.getEventAttendeesByEventStmt, err = db.PrepareContext(ctx, getEventAttendeesByEvent); err != nil {
+		return nil, fmt.Errorf("error preparing query GetEventAttendeesByEvent: %w", err)
+	}
+	if q.getEventAttendeesByUserStmt, err = db.PrepareContext(ctx, getEventAttendeesByUser); err != nil {
+		return nil, fmt.Errorf("error preparing query GetEventAttendeesByUser: %w", err)
+	}
+	if q.getEventSectionStmt, err = db.PrepareContext(ctx, getEventSection); err != nil {
+		return nil, fmt.Errorf("error preparing query GetEventSection: %w", err)
+	}
+	if q.getEventSectionsByEventStmt, err = db.PrepareContext(ctx, getEventSectionsByEvent); err != nil {
+		return nil, fmt.Errorf("error preparing query GetEventSectionsByEvent: %w", err)
+	}
+	if q.getEventsStmt, err = db.PrepareContext(ctx, getEvents); err != nil {
+		return nil, fmt.Errorf("error preparing query GetEvents: %w", err)
+	}
+	if q.getGroupStmt, err = db.PrepareContext(ctx, getGroup); err != nil {
+		return nil, fmt.Errorf("error preparing query GetGroup: %w", err)
+	}
+	if q.getGroupBookStmt, err = db.PrepareContext(ctx, getGroupBook); err != nil {
+		return nil, fmt.Errorf("error preparing query GetGroupBook: %w", err)
+	}
+	if q.getGroupBooksByBookStmt, err = db.PrepareContext(ctx, getGroupBooksByBook); err != nil {
+		return nil, fmt.Errorf("error preparing query GetGroupBooksByBook: %w", err)
+	}
+	if q.getGroupBooksByGroupStmt, err = db.PrepareContext(ctx, getGroupBooksByGroup); err != nil {
+		return nil, fmt.Errorf("error preparing query GetGroupBooksByGroup: %w", err)
+	}
+	if q.getGroupsStmt, err = db.PrepareContext(ctx, getGroups); err != nil {
+		return nil, fmt.Errorf("error preparing query GetGroups: %w", err)
+	}
+	if q.getSectionStmt, err = db.PrepareContext(ctx, getSection); err != nil {
+		return nil, fmt.Errorf("error preparing query GetSection: %w", err)
+	}
+	if q.getSectionsByChapterStmt, err = db.PrepareContext(ctx, getSectionsByChapter); err != nil {
+		return nil, fmt.Errorf("error preparing query GetSectionsByChapter: %w", err)
+	}
+	if q.getUserStmt, err = db.PrepareContext(ctx, getUser); err != nil {
+		return nil, fmt.Errorf("error preparing query GetUser: %w", err)
+	}
+	if q.getUserByEmailStmt, err = db.PrepareContext(ctx, getUserByEmail); err != nil {
+		return nil, fmt.Errorf("error preparing query GetUserByEmail: %w", err)
+	}
+	if q.updateBookStmt, err = db.PrepareContext(ctx, updateBook); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateBook: %w", err)
+	}
+	if q.updateChapterStmt, err = db.PrepareContext(ctx, updateChapter); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateChapter: %w", err)
+	}
+	if q.updateEventStmt, err = db.PrepareContext(ctx, updateEvent); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateEvent: %w", err)
+	}
+	if q.updateEventAttendeeStmt, err = db.PrepareContext(ctx, updateEventAttendee); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateEventAttendee: %w", err)
+	}
+	if q.updateEventSectionStmt, err = db.PrepareContext(ctx, updateEventSection); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateEventSection: %w", err)
+	}
+	if q.updateGroupStmt, err = db.PrepareContext(ctx, updateGroup); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateGroup: %w", err)
+	}
+	if q.updateGroupBookStmt, err = db.PrepareContext(ctx, updateGroupBook); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateGroupBook: %w", err)
+	}
+	if q.updateSectionStmt, err = db.PrepareContext(ctx, updateSection); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateSection: %w", err)
+	}
+	if q.updateUserStmt, err = db.PrepareContext(ctx, updateUser); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateUser: %w", err)
+	}
+	return &q, nil
+}
+
+func (q *Queries) Close() error {
+	var err error
+	if q.bookExistsInGroupStmt != nil {
+		if cerr := q.bookExistsInGroupStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing bookExistsInGroupStmt: %w", cerr)
+		}
+	}
+	if q.createBookStmt != nil {
+		if cerr := q.createBookStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createBookStmt: %w", cerr)
+		}
+	}
+	if q.createChapterStmt != nil {
+		if cerr := q.createChapterStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createChapterStmt: %w", cerr)
+		}
+	}
+	if q.createEventStmt != nil {
+		if cerr := q.createEventStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createEventStmt: %w", cerr)
+		}
+	}
+	if q.createEventAttendeeStmt != nil {
+		if cerr := q.createEventAttendeeStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createEventAttendeeStmt: %w", cerr)
+		}
+	}
+	if q.createEventSectionStmt != nil {
+		if cerr := q.createEventSectionStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createEventSectionStmt: %w", cerr)
+		}
+	}
+	if q.createGroupStmt != nil {
+		if cerr := q.createGroupStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createGroupStmt: %w", cerr)
+		}
+	}
+	if q.createGroupBookStmt != nil {
+		if cerr := q.createGroupBookStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createGroupBookStmt: %w", cerr)
+		}
+	}
+	if q.createSectionStmt != nil {
+		if cerr := q.createSectionStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createSectionStmt: %w", cerr)
+		}
+	}
+	if q.createUserStmt != nil {
+		if cerr := q.createUserStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createUserStmt: %w", cerr)
+		}
+	}
+	if q.deleteBookStmt != nil {
+		if cerr := q.deleteBookStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteBookStmt: %w", cerr)
+		}
+	}
+	if q.deleteChapterStmt != nil {
+		if cerr := q.deleteChapterStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteChapterStmt: %w", cerr)
+		}
+	}
+	if q.deleteEventStmt != nil {
+		if cerr := q.deleteEventStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteEventStmt: %w", cerr)
+		}
+	}
+	if q.deleteEventAttendeeStmt != nil {
+		if cerr := q.deleteEventAttendeeStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteEventAttendeeStmt: %w", cerr)
+		}
+	}
+	if q.deleteEventSectionStmt != nil {
+		if cerr := q.deleteEventSectionStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteEventSectionStmt: %w", cerr)
+		}
+	}
+	if q.deleteGroupStmt != nil {
+		if cerr := q.deleteGroupStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteGroupStmt: %w", cerr)
+		}
+	}
+	if q.deleteGroupBookStmt != nil {
+		if cerr := q.deleteGroupBookStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteGroupBookStmt: %w", cerr)
+		}
+	}
+	if q.deleteSectionStmt != nil {
+		if cerr := q.deleteSectionStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteSectionStmt: %w", cerr)
+		}
+	}
+	if q.deleteUserStmt != nil {
+		if cerr := q.deleteUserStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteUserStmt: %w", cerr)
+		}
+	}
+	if q.getBookStmt != nil {
+		if cerr := q.getBookStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getBookStmt: %w", cerr)
+		}
+	}
+	if q.getBooksStmt != nil {
+		if cerr := q.getBooksStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getBooksStmt: %w", cerr)
+		}
+	}
+	if q.getBooksByCategoryStmt != nil {
+		if cerr := q.getBooksByCategoryStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getBooksByCategoryStmt: %w", cerr)
+		}
+	}
+	if q.getChapterStmt != nil {
+		if cerr := q.getChapterStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getChapterStmt: %w", cerr)
+		}
+	}
+	if q.getChaptersStmt != nil {
+		if cerr := q.getChaptersStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getChaptersStmt: %w", cerr)
+		}
+	}
+	if q.getChaptersByBookStmt != nil {
+		if cerr := q.getChaptersByBookStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getChaptersByBookStmt: %w", cerr)
+		}
+	}
+	if q.getEventStmt != nil {
+		if cerr := q.getEventStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getEventStmt: %w", cerr)
+		}
+	}
+	if q.getEventAttendeeStmt != nil {
+		if cerr := q.getEventAttendeeStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getEventAttendeeStmt: %w", cerr)
+		}
+	}
+	if q.getEventAttendeesByEventStmt != nil {
+		if cerr := q.getEventAttendeesByEventStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getEventAttendeesByEventStmt: %w", cerr)
+		}
+	}
+	if q.getEventAttendeesByUserStmt != nil {
+		if cerr := q.getEventAttendeesByUserStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getEventAttendeesByUserStmt: %w", cerr)
+		}
+	}
+	if q.getEventSectionStmt != nil {
+		if cerr := q.getEventSectionStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getEventSectionStmt: %w", cerr)
+		}
+	}
+	if q.getEventSectionsByEventStmt != nil {
+		if cerr := q.getEventSectionsByEventStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getEventSectionsByEventStmt: %w", cerr)
+		}
+	}
+	if q.getEventsStmt != nil {
+		if cerr := q.getEventsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getEventsStmt: %w", cerr)
+		}
+	}
+	if q.getGroupStmt != nil {
+		if cerr := q.getGroupStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getGroupStmt: %w", cerr)
+		}
+	}
+	if q.getGroupBookStmt != nil {
+		if cerr := q.getGroupBookStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getGroupBookStmt: %w", cerr)
+		}
+	}
+	if q.getGroupBooksByBookStmt != nil {
+		if cerr := q.getGroupBooksByBookStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getGroupBooksByBookStmt: %w", cerr)
+		}
+	}
+	if q.getGroupBooksByGroupStmt != nil {
+		if cerr := q.getGroupBooksByGroupStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getGroupBooksByGroupStmt: %w", cerr)
+		}
+	}
+	if q.getGroupsStmt != nil {
+		if cerr := q.getGroupsStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getGroupsStmt: %w", cerr)
+		}
+	}
+	if q.getSectionStmt != nil {
+		if cerr := q.getSectionStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getSectionStmt: %w", cerr)
+		}
+	}
+	if q.getSectionsByChapterStmt != nil {
+		if cerr := q.getSectionsByChapterStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getSectionsByChapterStmt: %w", cerr)
+		}
+	}
+	if q.getUserStmt != nil {
+		if cerr := q.getUserStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getUserStmt: %w", cerr)
+		}
+	}
+	if q.getUserByEmailStmt != nil {
+		if cerr := q.getUserByEmailStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getUserByEmailStmt: %w", cerr)
+		}
+	}
+	if q.updateBookStmt != nil {
+		if cerr := q.updateBookStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateBookStmt: %w", cerr)
+		}
+	}
+	if q.updateChapterStmt != nil {
+		if cerr := q.updateChapterStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateChapterStmt: %w", cerr)
+		}
+	}
+	if q.updateEventStmt != nil {
+		if cerr := q.updateEventStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateEventStmt: %w", cerr)
+		}
+	}
+	if q.updateEventAttendeeStmt != nil {
+		if cerr := q.updateEventAttendeeStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateEventAttendeeStmt: %w", cerr)
+		}
+	}
+	if q.updateEventSectionStmt != nil {
+		if cerr := q.updateEventSectionStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateEventSectionStmt: %w", cerr)
+		}
+	}
+	if q.updateGroupStmt != nil {
+		if cerr := q.updateGroupStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateGroupStmt: %w", cerr)
+		}
+	}
+	if q.updateGroupBookStmt != nil {
+		if cerr := q.updateGroupBookStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateGroupBookStmt: %w", cerr)
+		}
+	}
+	if q.updateSectionStmt != nil {
+		if cerr := q.updateSectionStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateSectionStmt: %w", cerr)
+		}
+	}
+	if q.updateUserStmt != nil {
+		if cerr := q.updateUserStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateUserStmt: %w", cerr)
+		}
+	}
+	return err
+}
+
+func (q *Queries) exec(ctx context.Context, stmt *sql.Stmt, query string, args ...interface{}) (sql.Result, error) {
+	switch {
+	case stmt != nil && q.tx != nil:
+		return q.tx.StmtContext(ctx, stmt).ExecContext(ctx, args...)
+	case stmt != nil:
+		return stmt.ExecContext(ctx, args...)
+	default:
+		return q.db.ExecContext(ctx, query, args...)
+	}
+}
+
+func (q *Queries) query(ctx context.Context, stmt *sql.Stmt, query string, args ...interface{}) (*sql.Rows, error) {
+	switch {
+	case stmt != nil && q.tx != nil:
+		return q.tx.StmtContext(ctx, stmt).QueryContext(ctx, args...)
+	case stmt != nil:
+		return stmt.QueryContext(ctx, args...)
+	default:
+		return q.db.QueryContext(ctx, query, args...)
+	}
+}
+
+func (q *Queries) queryRow(ctx context.Context, stmt *sql.Stmt, query string, args ...interface{}) *sql.Row {
+	switch {
+	case stmt != nil && q.tx != nil:
+		return q.tx.StmtContext(ctx, stmt).QueryRowContext(ctx, args...)
+	case stmt != nil:
+		return stmt.QueryRowContext(ctx, args...)
+	default:
+		return q.db.QueryRowContext(ctx, query, args...)
+	}
+}
+
 type Queries struct {
-	db DBTX
+	db                           DBTX
+	tx                           *sql.Tx
+	bookExistsInGroupStmt        *sql.Stmt
+	createBookStmt               *sql.Stmt
+	createChapterStmt            *sql.Stmt
+	createEventStmt              *sql.Stmt
+	createEventAttendeeStmt      *sql.Stmt
+	createEventSectionStmt       *sql.Stmt
+	createGroupStmt              *sql.Stmt
+	createGroupBookStmt          *sql.Stmt
+	createSectionStmt            *sql.Stmt
+	createUserStmt               *sql.Stmt
+	deleteBookStmt               *sql.Stmt
+	deleteChapterStmt            *sql.Stmt
+	deleteEventStmt              *sql.Stmt
+	deleteEventAttendeeStmt      *sql.Stmt
+	deleteEventSectionStmt       *sql.Stmt
+	deleteGroupStmt              *sql.Stmt
+	deleteGroupBookStmt          *sql.Stmt
+	deleteSectionStmt            *sql.Stmt
+	deleteUserStmt               *sql.Stmt
+	getBookStmt                  *sql.Stmt
+	getBooksStmt                 *sql.Stmt
+	getBooksByCategoryStmt       *sql.Stmt
+	getChapterStmt               *sql.Stmt
+	getChaptersStmt              *sql.Stmt
+	getChaptersByBookStmt        *sql.Stmt
+	getEventStmt                 *sql.Stmt
+	getEventAttendeeStmt         *sql.Stmt
+	getEventAttendeesByEventStmt *sql.Stmt
+	getEventAttendeesByUserStmt  *sql.Stmt
+	getEventSectionStmt          *sql.Stmt
+	getEventSectionsByEventStmt  *sql.Stmt
+	getEventsStmt                *sql.Stmt
+	getGroupStmt                 *sql.Stmt
+	getGroupBookStmt             *sql.Stmt
+	getGroupBooksByBookStmt      *sql.Stmt
+	getGroupBooksByGroupStmt     *sql.Stmt
+	getGroupsStmt                *sql.Stmt
+	getSectionStmt               *sql.Stmt
+	getSectionsByChapterStmt     *sql.Stmt
+	getUserStmt                  *sql.Stmt
+	getUserByEmailStmt           *sql.Stmt
+	updateBookStmt               *sql.Stmt
+	updateChapterStmt            *sql.Stmt
+	updateEventStmt              *sql.Stmt
+	updateEventAttendeeStmt      *sql.Stmt
+	updateEventSectionStmt       *sql.Stmt
+	updateGroupStmt              *sql.Stmt
+	updateGroupBookStmt          *sql.Stmt
+	updateSectionStmt            *sql.Stmt
+	updateUserStmt               *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	return &Queries{
-		db: tx,
+		db:                           tx,
+		tx:                           tx,
+		bookExistsInGroupStmt:        q.bookExistsInGroupStmt,
+		createBookStmt:               q.createBookStmt,
+		createChapterStmt:            q.createChapterStmt,
+		createEventStmt:              q.createEventStmt,
+		createEventAttendeeStmt:      q.createEventAttendeeStmt,
+		createEventSectionStmt:       q.createEventSectionStmt,
+		createGroupStmt:              q.createGroupStmt,
+		createGroupBookStmt:          q.createGroupBookStmt,
+		createSectionStmt:            q.createSectionStmt,
+		createUserStmt:               q.createUserStmt,
+		deleteBookStmt:               q.deleteBookStmt,
+		deleteChapterStmt:            q.deleteChapterStmt,
+		deleteEventStmt:              q.deleteEventStmt,
+		deleteEventAttendeeStmt:      q.deleteEventAttendeeStmt,
+		deleteEventSectionStmt:       q.deleteEventSectionStmt,
+		deleteGroupStmt:              q.deleteGroupStmt,
+		deleteGroupBookStmt:          q.deleteGroupBookStmt,
+		deleteSectionStmt:            q.deleteSectionStmt,
+		deleteUserStmt:               q.deleteUserStmt,
+		getBookStmt:                  q.getBookStmt,
+		getBooksStmt:                 q.getBooksStmt,
+		getBooksByCategoryStmt:       q.getBooksByCategoryStmt,
+		getChapterStmt:               q.getChapterStmt,
+		getChaptersStmt:              q.getChaptersStmt,
+		getChaptersByBookStmt:        q.getChaptersByBookStmt,
+		getEventStmt:                 q.getEventStmt,
+		getEventAttendeeStmt:         q.getEventAttendeeStmt,
+		getEventAttendeesByEventStmt: q.getEventAttendeesByEventStmt,
+		getEventAttendeesByUserStmt:  q.getEventAttendeesByUserStmt,
+		getEventSectionStmt:          q.getEventSectionStmt,
+		getEventSectionsByEventStmt:  q.getEventSectionsByEventStmt,
+		getEventsStmt:                q.getEventsStmt,
+		getGroupStmt:                 q.getGroupStmt,
+		getGroupBookStmt:             q.getGroupBookStmt,
+		getGroupBooksByBookStmt:      q.getGroupBooksByBookStmt,
+		getGroupBooksByGroupStmt:     q.getGroupBooksByGroupStmt,
+		getGroupsStmt:                q.getGroupsStmt,
+		getSectionStmt:               q.getSectionStmt,
+		getSectionsByChapterStmt:     q.getSectionsByChapterStmt,
+		getUserStmt:                  q.getUserStmt,
+		getUserByEmailStmt:           q.getUserByEmailStmt,
+		updateBookStmt:               q.updateBookStmt,
+		updateChapterStmt:            q.updateChapterStmt,
+		updateEventStmt:              q.updateEventStmt,
+		updateEventAttendeeStmt:      q.updateEventAttendeeStmt,
+		updateEventSectionStmt:       q.updateEventSectionStmt,
+		updateGroupStmt:              q.updateGroupStmt,
+		updateGroupBookStmt:          q.updateGroupBookStmt,
+		updateSectionStmt:            q.updateSectionStmt,
+		updateUserStmt:               q.updateUserStmt,
 	}
 }

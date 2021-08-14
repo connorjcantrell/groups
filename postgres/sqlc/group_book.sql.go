@@ -8,6 +8,17 @@ import (
 	"database/sql"
 )
 
+const bookExistsInGroup = `-- name: BookExistsInGroup :one
+SELECT COUNT(*) FROM group_books WHERE book_id = $1
+`
+
+func (q *Queries) BookExistsInGroup(ctx context.Context, bookID sql.NullInt32) (int64, error) {
+	row := q.queryRow(ctx, q.bookExistsInGroupStmt, bookExistsInGroup, bookID)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createGroupBook = `-- name: CreateGroupBook :one
 INSERT INTO group_books (
   group_id,
@@ -27,7 +38,7 @@ type CreateGroupBookParams struct {
 }
 
 func (q *Queries) CreateGroupBook(ctx context.Context, arg CreateGroupBookParams) (GroupBook, error) {
-	row := q.db.QueryRowContext(ctx, createGroupBook,
+	row := q.queryRow(ctx, q.createGroupBookStmt, createGroupBook,
 		arg.GroupID,
 		arg.BookID,
 		arg.Completion,
@@ -50,7 +61,7 @@ WHERE id = $1
 `
 
 func (q *Queries) DeleteGroupBook(ctx context.Context, id int32) error {
-	_, err := q.db.ExecContext(ctx, deleteGroupBook, id)
+	_, err := q.exec(ctx, q.deleteGroupBookStmt, deleteGroupBook, id)
 	return err
 }
 
@@ -60,7 +71,7 @@ WHERE id = $1 LIMIT 1
 `
 
 func (q *Queries) GetGroupBook(ctx context.Context, id int32) (GroupBook, error) {
-	row := q.db.QueryRowContext(ctx, getGroupBook, id)
+	row := q.queryRow(ctx, q.getGroupBookStmt, getGroupBook, id)
 	var i GroupBook
 	err := row.Scan(
 		&i.ID,
@@ -78,7 +89,7 @@ WHERE book_id = $1
 `
 
 func (q *Queries) GetGroupBooksByBook(ctx context.Context, bookID sql.NullInt32) ([]GroupBook, error) {
-	rows, err := q.db.QueryContext(ctx, getGroupBooksByBook, bookID)
+	rows, err := q.query(ctx, q.getGroupBooksByBookStmt, getGroupBooksByBook, bookID)
 	if err != nil {
 		return nil, err
 	}
@@ -112,7 +123,7 @@ WHERE group_id = $1
 `
 
 func (q *Queries) GetGroupBooksByGroup(ctx context.Context, groupID sql.NullInt32) ([]GroupBook, error) {
-	rows, err := q.db.QueryContext(ctx, getGroupBooksByGroup, groupID)
+	rows, err := q.query(ctx, q.getGroupBooksByGroupStmt, getGroupBooksByGroup, groupID)
 	if err != nil {
 		return nil, err
 	}
@@ -160,7 +171,7 @@ type UpdateGroupBookParams struct {
 }
 
 func (q *Queries) UpdateGroupBook(ctx context.Context, arg UpdateGroupBookParams) (GroupBook, error) {
-	row := q.db.QueryRowContext(ctx, updateGroupBook,
+	row := q.queryRow(ctx, q.updateGroupBookStmt, updateGroupBook,
 		arg.ID,
 		arg.GroupID,
 		arg.BookID,

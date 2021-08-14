@@ -6,9 +6,13 @@ WHERE id = $1 LIMIT 1;
 SELECT * FROM group_books
 WHERE group_id = $1;
 
+
 -- name: GetGroupBooksByBook :many
 SELECT * FROM group_books
 WHERE book_id = $1;
+
+-- name: BookExistsInGroup :one
+SELECT COUNT(*) FROM group_books WHERE book_id = $1;
 
 -- name: CreateGroupBook :one
 INSERT INTO group_books (
@@ -33,3 +37,9 @@ RETURNING *;
 -- name: DeleteGroupBook :exec
 DELETE FROM group_books
 WHERE id = $1;
+
+-- it may not correct, I will check and send you later 
+-- name: GetGroupWithBooks :one
+-- SELECT groups.*, groups.books 
+-- FROM groups
+-- INNER JOIN books ON groups.book_id = books.id

@@ -1,5 +1,10 @@
 package form
 
+import (
+	"encoding/json"
+	"time"
+)
+
 type NoBookErr struct{}
 
 func (e NoBookErr) Error() string {
@@ -31,11 +36,19 @@ func (e NoDurationErr) Error() string {
 }
 
 type EventForm struct {
-	BookID      int
-	ChapterID   int
-	SectionID   int
-	StartTime   string // Convert formatted string to time.Time
-	Description string
+	BookID    int `json:"book_id"`
+	ChapterID int `json:"chapter_id"`
+	SectionID int `json:"section_id"`
+	// Client must send rfc3339/ISO 8601 string
+	// json.Unmarshal() will convert to time.Time
+	StartTime   time.Time `json:"start_time"`
+	Description string    `json:"description"`
+}
+
+func UnmarshalEventForm(data []byte) (EventForm, error) {
+	var f EventForm
+	err := json.Unmarshal(data, &f)
+	return f, err
 }
 
 func (f EventForm) Validate() (bool, error) {
@@ -48,7 +61,7 @@ func (f EventForm) Validate() (bool, error) {
 	if f.SectionID == 0 {
 		return false, NoSectionErr{}
 	}
-	if f.StartTime == "" {
+	if f.StartTime.IsZero() {
 		return false, NoStartTimeErr{}
 	}
 	return true, nil

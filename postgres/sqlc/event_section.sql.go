@@ -27,7 +27,7 @@ type CreateEventSectionParams struct {
 }
 
 func (q *Queries) CreateEventSection(ctx context.Context, arg CreateEventSectionParams) (EventSection, error) {
-	row := q.db.QueryRowContext(ctx, createEventSection,
+	row := q.queryRow(ctx, q.createEventSectionStmt, createEventSection,
 		arg.EventID,
 		arg.SectionID,
 		arg.Presenter,
@@ -50,7 +50,7 @@ WHERE id = $1
 `
 
 func (q *Queries) DeleteEventSection(ctx context.Context, id int32) error {
-	_, err := q.db.ExecContext(ctx, deleteEventSection, id)
+	_, err := q.exec(ctx, q.deleteEventSectionStmt, deleteEventSection, id)
 	return err
 }
 
@@ -60,7 +60,7 @@ WHERE id = $1 LIMIT 1
 `
 
 func (q *Queries) GetEventSection(ctx context.Context, id int32) (EventSection, error) {
-	row := q.db.QueryRowContext(ctx, getEventSection, id)
+	row := q.queryRow(ctx, q.getEventSectionStmt, getEventSection, id)
 	var i EventSection
 	err := row.Scan(
 		&i.ID,
@@ -78,7 +78,7 @@ WHERE event_id = $1
 `
 
 func (q *Queries) GetEventSectionsByEvent(ctx context.Context, eventID sql.NullInt32) ([]EventSection, error) {
-	rows, err := q.db.QueryContext(ctx, getEventSectionsByEvent, eventID)
+	rows, err := q.query(ctx, q.getEventSectionsByEventStmt, getEventSectionsByEvent, eventID)
 	if err != nil {
 		return nil, err
 	}
@@ -126,7 +126,7 @@ type UpdateEventSectionParams struct {
 }
 
 func (q *Queries) UpdateEventSection(ctx context.Context, arg UpdateEventSectionParams) (EventSection, error) {
-	row := q.db.QueryRowContext(ctx, updateEventSection,
+	row := q.queryRow(ctx, q.updateEventSectionStmt, updateEventSection,
 		arg.ID,
 		arg.EventID,
 		arg.SectionID,
